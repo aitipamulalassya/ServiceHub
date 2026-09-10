@@ -78,6 +78,7 @@ Administrators can review provider applications, verify uploaded documents, appr
 - JWT
 - bcryptjs
 - Multer
+- Cloudinary
 - express-validator
 
 ### Authentication & Documentation
@@ -93,6 +94,8 @@ Administrators can review provider applications, verify uploaded documents, appr
 - VS Code
 - Docker
 - Docker Compose
+- Render
+- Vercel
 
 ---
 
@@ -115,10 +118,11 @@ Administrators can review provider applications, verify uploaded documents, appr
               ┌─────────────┴─────────────┐
               │                           │
               ▼                           ▼
-       ┌─────────────┐             ┌──────────────┐
-       │   MongoDB   │             │ File Uploads │
-       │  + Mongoose │             │    Multer    │
-       └─────────────┘             └──────────────┘
+       ┌─────────────┐             ┌─────────────────┐
+       │   MongoDB   │             │ Cloudinary      │
+       │  + Mongoose │             │Profile Photos & |
+       │             |             |Verification Docs|
+       └─────────────┘             └─────────────────┘
 ```
 
 ---
@@ -271,17 +275,17 @@ cd client
 npm install
 ```
 
-### 7. Configure Frontend Google Client ID
+### 7. Configure Frontend Environment Variables
 
 Create:
 
 ```text
 client/.env
-```
 
 Add:
 
 ```env
+VITE_API_URL=http://localhost:5000/api
 VITE_GOOGLE_CLIENT_ID=your_google_client_id
 ```
 
@@ -298,6 +302,14 @@ Frontend:
 ```text
 http://localhost:5173
 ```
+### 9. Configure Cloudinary
+
+Create a Cloudinary account and configure the following backend environment variables:
+
+```env
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 
 ---
 
@@ -349,6 +361,7 @@ Password: Admin@123
 | POST | `/api/providers/documents` | Upload verification document |
 | POST | `/api/providers/documents/profile-photo` | Upload profile photo |
 | GET | `/api/providers/documents` | Get uploaded documents |
+| DELETE | `/api/providers/documents/:id` | Delete uploaded document |
 
 ### Admin
 
@@ -460,7 +473,45 @@ MongoDB can be configured through the `MONGO_URI` environment variable.
 ```bash
 docker compose down
 ```
+---
 
+
+### 6. Deployment section
+
+
+```md
+## 🌐 Deployment
+
+ServiceHub is deployed using:
+
+- **Frontend:** Vercel
+- **Backend:** Render
+- **Database:** MongoDB Atlas
+- **File Storage:** Cloudinary
+
+### Production Architecture
+
+```text
+                    ┌──────────────────┐
+                    │     Vercel       │
+                    │ React + Vite     │
+                    └────────┬─────────┘
+                             │
+                           Axios
+                             │
+                             ▼
+                    ┌──────────────────┐
+                    │      Render      │
+                    │ Node + Express   │
+                    └───────┬──────────┘
+                            │
+              ┌─────────────┴─────────────┐
+              ▼                           ▼
+       ┌──────────────┐            ┌──────────────┐
+       │ MongoDB Atlas│            │  Cloudinary  │
+       │ Application  │            │ Documents &  │
+       │ Data         │            │ Photos       │
+       └──────────────┘            └──────────────┘
 ---
 ## 📸 Screenshots
 
@@ -482,6 +533,9 @@ ServiceHub implements several security mechanisms:
 - Authentication middleware for protected resources
 - Google OAuth authentication
 - Password reset token hashing and expiration
+- Cloudinary-based persistent file storage
+- File type and file size validation
+- Protected document deletion
 
 ---
 
@@ -501,6 +555,9 @@ ServiceHub implements several security mechanisms:
 - Added dark mode support.
 - Added Swagger API documentation.
 - Added Docker and Docker Compose support.
+- Implemented document and profile image uploads using Multer and Cloudinary.
+- Added persistent cloud storage for verification documents and profile photos.
+- Implemented secure document deletion from MongoDB and Cloudinary.
 - Added protected frontend routes based on user roles.
 
 ---
