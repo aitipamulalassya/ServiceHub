@@ -10,19 +10,13 @@ const uploadToCloudinary = (file, folder, resourceType) => {
                 folder,
                 resource_type: resourceType,
             },
-            (error, result) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(result);
-                }
-            }
+            (error, result) =>
+                error ? reject(error) : resolve(result)
         );
 
         uploadStream.end(file.buffer);
     });
 };
-
 // Upload verification document
 const uploadDocument = async (req, res) => {
     try {
@@ -76,11 +70,10 @@ const uploadDocument = async (req, res) => {
 
         // Upload document to Cloudinary
         const result = await uploadToCloudinary(
-            req.file,
-            "servicehub/documents",
-            "raw"
-        );
-
+    req.file,
+    "servicehub/documents",
+    "image"
+);
         const document = await Document.create({
             providerId: profile._id,
             type,
