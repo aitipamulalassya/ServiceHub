@@ -1,5 +1,27 @@
 const Document = require("../models/Document");
 const ProviderProfile = require("../models/ProviderProfile");
+const cloudinary = require("../config/cloudinary");
+
+// Upload file to Cloudinary
+const uploadToCloudinary = (file, folder, resourceType) => {
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+            {
+                folder,
+                resource_type: resourceType,
+            },
+            (error, result) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(result);
+                }
+            }
+        );
+
+        uploadStream.end(file.buffer);
+    });
+};
 
 // Upload verification document
 const uploadDocument = async (req, res) => {
@@ -52,11 +74,18 @@ const uploadDocument = async (req, res) => {
             });
         }
 
+        // Upload document to Cloudinary
+        const result = await uploadToCloudinary(
+            req.file,
+            "servicehub/documents",
+            "raw"
+        );
+
         const document = await Document.create({
             providerId: profile._id,
             type,
             fileName: req.file.originalname,
-            filePath: `/uploads/${req.file.filename}`,
+            filePath: result.secure_url,
         });
 
         profile.documents.push(document._id);
@@ -109,6 +138,8 @@ const getDocuments = async (req, res) => {
         });
     }
 };
+
+// Upload profile photo
 const uploadProfilePhoto = async (req, res) => {
     try {
         if (!req.file) {
@@ -136,7 +167,14 @@ const uploadProfilePhoto = async (req, res) => {
             });
         }
 
-        profile.profilePhoto = `/uploads/${req.file.filename}`;
+        // Upload profile photo to Cloudinary
+        const result = await uploadToCloudinary(
+            req.file,
+            "servicehub/profile-photos",
+            "image"
+        );
+
+        profile.profilePhoto = result.secure_url;
 
         await profile.save();
 
@@ -154,6 +192,7 @@ const uploadProfilePhoto = async (req, res) => {
         });
     }
 };
+
 module.exports = {
     uploadDocument,
     getDocuments,
