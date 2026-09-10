@@ -476,11 +476,11 @@ docker compose down
 ---
 
 
-### 6. Deployment section
+## Deployment section
 
+### 🌐 Deployment
+```text
 
-```md
-## 🌐 Deployment
 
 ServiceHub is deployed using:
 
@@ -488,6 +488,7 @@ ServiceHub is deployed using:
 - **Backend:** Render
 - **Database:** MongoDB Atlas
 - **File Storage:** Cloudinary
+```
 
 ### Production Architecture
 
@@ -512,6 +513,7 @@ ServiceHub is deployed using:
        │ Application  │            │ Documents &  │
        │ Data         │            │ Photos       │
        └──────────────┘            └──────────────┘
+```
 ---
 ## 📸 Screenshots
 
