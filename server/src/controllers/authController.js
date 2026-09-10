@@ -241,7 +241,10 @@ const forgotPassword = async (req, res) => {
         await user.save();
 
         // Demo reset URL
-        const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+      const frontendUrl =
+    process.env.FRONTEND_URL || "http://localhost:5173";
+
+const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
 
         console.log("=================================");
         console.log("PASSWORD RESET LINK:");
