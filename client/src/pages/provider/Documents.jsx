@@ -152,6 +152,25 @@ const Documents = () => {
             setUploadingPhoto(false);
         }
     };
+    const handleDelete = async (id) => {
+    try {
+        setError("");
+        setMessage("");
+
+        await api.delete(`/providers/documents/${id}`);
+
+        setMessage("Document deleted successfully");
+
+        await loadData();
+    } catch (err) {
+        console.error("Document delete error:", err);
+
+        setError(
+            err.response?.data?.message ||
+            "Failed to delete document"
+        );
+    }
+};
 
     if (loading) {
         return (
@@ -405,14 +424,26 @@ const Documents = () => {
 
                                         </div>
 
-                                        <a
-                                           href={`${document.filePath}`}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            className="inline-flex justify-center rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-600 transition"
-                                        >
-                                            View Document
-                                        </a>
+                                       <div className="flex gap-2">
+    <a
+        href={document.filePath}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex justify-center rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-600 transition"
+    >
+        View Document
+    </a>
+
+    {!isApproved && (
+        <button
+            type="button"
+            onClick={() => handleDelete(document._id)}
+            className="inline-flex justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 transition"
+        >
+            Delete
+        </button>
+    )}
+</div>
 
                                     </div>
                                 ))}

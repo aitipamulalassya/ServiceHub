@@ -5,6 +5,7 @@ const {
   uploadDocument,
   getDocuments,
   uploadProfilePhoto,
+  deleteDocument,
 } = require("../controllers/documentController");
 
 const { protect, authorize } = require("../middleware/authMiddleware");
@@ -118,5 +119,47 @@ router.post(
   upload.single("profilePhoto"),
   uploadProfilePhoto
 );
+/**
+ * @swagger
+ * /api/providers/documents/{id}:
+ *   delete:
+ *     summary: Delete a provider document
+ *     description: Deletes a document from the provider profile and removes the uploaded file from Cloudinary.
+ *     tags:
+ *       - Documents
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ID of the document
+ *     responses:
+ *       200:
+ *         description: Document deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Document deleted successfully
+ *       400:
+ *         description: Approved profile cannot be modified
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Document or provider profile not found
+ *       500:
+ *         description: Failed to delete document
+ */
+router.delete("/:id", protect, deleteDocument);
+
 
 module.exports = router;

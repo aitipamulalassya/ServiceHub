@@ -192,9 +192,100 @@ const uploadProfilePhoto = async (req, res) => {
         });
     }
 };
+const deleteDocument = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const profile = await ProviderProfile.findOne({
+            userId: req.user.id,
+        });
+
+        if (!profile) {
+            return res.status(404).json({
+                success: false,
+                message: "Provider profile not found",
+            });
+        }
+
+        const document = await Document.findOne({
+            _id: id,
+            providerId: profile._id,
+        });
+
+        if (!document) {
+            return res.status(404).json({
+                success: false,
+                message: "Document not found",
+            });
+        }
+
+        if (profile.status === "approved") {
+            return res.status(400).json({
+                success: false,
+                message: "Approved profile cannot be modified",
+            });
+        }
+
+        // Delete from Cloudinary
+        if (document.filePath) {
+            try {
+                const urlParts = document.filePath.split("/");
+
+                // Find everything after /upload/
+                const uploadIndex = urlParts.indexOf("upload");
+
+                if (uploadIndex !== -1) {
+                    let publicIdParts = urlParts.slice(uploadIndex + 1);
+
+                    // Remove version: v123456789/
+                    if (publicIdParts[0]?.startsWith("v")) {
+                        publicIdParts.shift();
+                    }
+
+                    let publicId = publicIdParts.join("/");
+
+                    // Remove extension
+                    publicId = publicId.replace(/\.[^/.]+$/, "");
+
+                    await cloudinary.uploader.destroy(publicId, {
+                        resource_type: "raw",
+                    });
+                }
+            } catch (cloudinaryError) {
+                console.error(
+                    "Cloudinary delete error:",
+                    cloudinaryError
+                );
+            }
+        }
+
+        // Remove document ID from provider profile
+        profile.documents = profile.documents.filter(
+            (docId) => docId.toString() !== document._id.toString()
+        );
+
+        await profile.save();
+
+        // Delete MongoDB document
+        await Document.findByIdAndDelete(id);
+
+        return res.status(200).json({
+            success: true,
+            message: "Document deleted successfully",
+        });
+    } catch (error) {
+        console.error("DELETE DOCUMENT ERROR:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to delete document",
+        });
+    }
+};
 
 module.exports = {
     uploadDocument,
     getDocuments,
     uploadProfilePhoto,
+    deleteDocument,
 };
