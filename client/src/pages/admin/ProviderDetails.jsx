@@ -143,7 +143,7 @@ function ProviderDetails() {
       return filePath;
     }
 
-    return `http://localhost:5000${filePath}`;
+    return `${import.meta.env.VITE_API_URL.replace("/api", "")}${filePath}`;
   };
 
   if (loading) {
