@@ -143,7 +143,7 @@ function ProviderDetails() {
       return filePath;
     }
 
-    return `${import.meta.env.VITE_API_URL.replace("/api", "")}${filePath}`;
+    return `${filePath}`;
   };
 
   if (loading) {

@@ -247,7 +247,7 @@ const Documents = () => {
                                 <div className="mt-5">
 
                                     <img
-                                        src={`${import.meta.env.VITE_API_URL.replace("/api", "")}${profile.profilePhoto}`}
+                                        src={`${profile.profilePhoto}`}
                                         alt="Profile"
                                         className="w-28 h-28 rounded-xl object-cover border border-slate-200 dark:border-slate-600"
                                     />
@@ -406,7 +406,7 @@ const Documents = () => {
                                         </div>
 
                                         <a
-                                           href={`${import.meta.env.VITE_API_URL.replace("/api", "")}${document.filePath}`}
+                                           href={`${document.filePath}`}
                                             target="_blank"
                                             rel="noreferrer"
                                             className="inline-flex justify-center rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-600 transition"
